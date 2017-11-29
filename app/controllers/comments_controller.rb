@@ -48,7 +48,7 @@ class CommentsController < ApplicationController
   def update
     respond_to do |format|
       if @comment.update(comment_params)
-        format.html { redirect_to post_path, notice: 'Comment was successfully updated.' }
+        format.html { redirect_to post_comment_path, notice: 'Comment was successfully updated.' }
         format.json { render :show, status: :ok, location: post_path }
       else
         format.html { render :edit }
@@ -62,9 +62,24 @@ class CommentsController < ApplicationController
   def destroy
     @comment.destroy
     respond_to do |format|
-      format.html { redirect_to post_path, notice: 'Comment was successfully destroyed.' }
+      format.html { redirect_to post_path(@comment.post), notice: 'Comment was successfully destroyed.' }
       format.json { head :no_content }
     end
+  end
+
+
+  def upvote
+    @comment= Comment.find(params[:id])
+    @comment.upvote_by current_user
+    @comments = Comment.all
+    redirect_to post_path(@comment.post)
+  end
+
+  def downvote
+    @comment = Comment.find(params[:id])
+    @comment.downvote_by current_user
+    @comments = Comment.all
+    redirect_to post_path(@comment.post)
   end
 
   private

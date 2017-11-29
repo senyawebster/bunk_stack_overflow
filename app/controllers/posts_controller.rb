@@ -39,6 +39,20 @@ class PostsController < ApplicationController
     end
   end
 
+  def upvote
+    @post= Post.find(params[:id])
+    @post.upvote_by current_user
+    @posts = Post.all
+    redirect_to :posts
+  end
+
+  def downvote
+    @post = Post.find(params[:id])
+    @post.downvote_by current_user
+    @posts = Post.all
+    redirect_to :posts
+  end
+
   # PATCH/PUT /posts/1
   # PATCH/PUT /posts/1.json
   def update
@@ -56,6 +70,10 @@ class PostsController < ApplicationController
   # DELETE /posts/1
   # DELETE /posts/1.json
   def destroy
+    @post.comments.each do |comment|
+      comment.destroy
+    end
+
     @post.destroy
     respond_to do |format|
       format.html { redirect_to posts_url, notice: 'Post was successfully destroyed.' }
